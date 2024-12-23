@@ -11,7 +11,7 @@ import torchvision
 from trainingmanager import TrainingManager
 
 
-EXPERIMENT_DIRECTORY = "runs/test1"
+EXPERIMENT_DIRECTORY = "runs/v2-res"
 
 
 device = "mps" if torch.backends.mps.is_available() else "cpu"
