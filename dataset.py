@@ -6,18 +6,27 @@ from torch.utils.data import DataLoader
 import glob
 from PIL import Image
 import os
+import numpy as np
 
 
 IMG_SIZE = 256
 
-transforms = v2.Compose([
-    #v2.PILToTensor(),
-    v2.ToImage(), 
-    v2.ToDtype(torch.float32, scale=True),
-    v2.Resize(IMG_SIZE), # These two ensure a square center crop.
-    v2.CenterCrop(size=(IMG_SIZE,IMG_SIZE)), 
+# transforms = v2.Compose([
+#     #v2.ToDtype(torch.float32, scale=True),
+#     v2.PILToTensor(),
+#     v2.ToTensor(), 
+    
+#     v2.Resize(IMG_SIZE), # These two ensure a square center crop.
+#     v2.CenterCrop(size=(IMG_SIZE,IMG_SIZE)), 
     
 
+# ])
+
+transforms = v2.Compose([
+    v2.Resize(IMG_SIZE),
+    v2.CenterCrop(size=(IMG_SIZE,IMG_SIZE)),
+    v2.Normalize(mean=[0.485], std=[0.229]), # imagenet mean and std
+    #v2.ToTensor()
 ])
 
 class ChestXrayDataset(Dataset):
@@ -33,7 +42,10 @@ class ChestXrayDataset(Dataset):
 
     def __getitem__(self, idx):
         img_path = self.file_list[idx]
-        image = Image.open(img_path)
+        # Its inefficient, but it works. This should be in transforms.
+        image = torch.as_tensor(np.array(Image.open(img_path).convert("L"), dtype=np.uint8), dtype=torch.float32).unsqueeze(0) / 255.0
+        # print(f"Image type: {type(image)}")
+        # print(image.size())
         if self.transform:
             image = self.transform(image)
 

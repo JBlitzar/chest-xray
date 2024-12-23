@@ -188,14 +188,17 @@ class TrainingManager:
 
         self.write_resume(epoch)
 
-    def trainstep(self, data):
+    def trainstep(self, data, labels):
 
-        data = tuple(d.to(self.device) for d in data)
+        data = data.to(self.device)
+        labels = labels.to(self.device)
 
         self.optimizer.zero_grad()
 
-        # Different for every model
-        #TODO: implement
+        result = self.net(data)
+
+        loss = self.criterion(result, labels)
+
 
         loss.backward()
 
@@ -205,21 +208,24 @@ class TrainingManager:
         self.tracker.add("Loss/epoch", loss.item())
 
     @torch.no_grad()  # decorator yay
-    def valstep(self, data):
+    def valstep(self, data, labels):
 
-        data = tuple(d.to(self.device) for d in data)
+        data = data.to(self.device)
+        labels = labels.to(self.device)
 
         self.optimizer.zero_grad()
 
-        # Different for every model
-       #TODO: implement
+        result = self.net(data)
+
+        loss = self.criterion(result, labels)
 
         # self.tracker.add("Loss/valstep", loss.item())
         self.tracker.add("Loss/val/epoch", loss.item())
 
     def epoch(self, epoch: int, dataloader, val_loader=None):
-        for step, data in enumerate(tqdm(dataloader, leave=False, dynamic_ncols=True)):
-            self.trainstep(data)
+        for step, batch in enumerate(tqdm(dataloader, leave=False, dynamic_ncols=True)):
+            data, labels = batch
+            self.trainstep(data, labels)
 
             if (
                 step % self.trainstep_checkin_interval
@@ -228,10 +234,11 @@ class TrainingManager:
                 self.on_trainloop_checkin(epoch, step, len(dataloader))
 
         if val_loader is not None:
-            for step, data in enumerate(
+            for step, batch in enumerate(
                 tqdm(val_loader, leave=False, dynamic_ncols=True)
             ):
-                self.valstep(data)
+                data, labels = batch
+                self.valstep(data, labels)
 
         self.on_epoch_checkin(epoch)
 

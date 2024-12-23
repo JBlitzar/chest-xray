@@ -35,6 +35,8 @@ class DBlock(nn.Module):
             nn.Conv2d(end, end, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
         )
+    def forward(self, x):
+        return self.block(x)
 
 class ChestXrayCNNRes(nn.Module):
     def __init__(self):
@@ -58,8 +60,8 @@ class ChestXrayCNNRes(nn.Module):
 
             DBlock(1024,2048),
             nn.MaxPool2d(kernel_size=2, stride=2), # 4x4x2048
-            
 
+            nn.Flatten(),
             nn.Linear(4*4*2048, 2),
             nn.Softmax(dim=1)
         )
