@@ -175,16 +175,16 @@ class TrainingManager:
             {
                 "Loss/Epoch": self.tracker.average("Loss/epoch"),
                 "Loss/Val/Epoch": val_loss,
-                "Accuracy/Trainstep": self.tracker.average("Accuracy/trainstep"),
-                "Accuracy/Valstep": self.tracker.average("Accuracy/valstep"),
+                "Accuracy/train/epoch": self.tracker.average("Accuracy/train/epoch"),
+                "Accuracy/val/epoch": self.tracker.average("Accuracy/val/epoch"),
             },
             epoch,
         )
 
         self.tracker.reset("Loss/epoch")
         self.tracker.reset("Loss/val/epoch")
-        self.tracker.reset("Accuracy/trainstep")
-        self.tracker.reset("Accuracy/valstep")
+        self.tracker.reset("Accuracy/train/epoch")
+        self.tracker.reset("Accuracy/val/epoch")
 
         self.write_resume(epoch)
 
@@ -195,7 +195,7 @@ class TrainingManager:
 
         self.optimizer.zero_grad()
 
-        result = self.net(data)
+        result = self.net(data).squeeze(1)
 
         loss = self.criterion(result, labels)
 
@@ -208,7 +208,7 @@ class TrainingManager:
         self.tracker.add("Loss/trainstep", loss.item())
         self.tracker.add("Loss/epoch", loss.item())
 
-        self.tracker.add("Accuracy/trainstep", acc)
+        self.tracker.add("Accuracy/train/epoch", acc)
 
     @torch.no_grad()  # decorator yay
     def valstep(self, data, labels):
@@ -218,7 +218,7 @@ class TrainingManager:
 
         self.optimizer.zero_grad()
 
-        result = self.net(data)
+        result = self.net(data).squeeze(1)
 
         loss = self.criterion(result, labels)
 
@@ -226,7 +226,7 @@ class TrainingManager:
 
         # self.tracker.add("Loss/valstep", loss.item())
         self.tracker.add("Loss/val/epoch", loss.item())
-        self.tracker.add("Accuracy/valstep", acc)
+        self.tracker.add("Accuracy/val/epoch", acc)
 
     def epoch(self, epoch: int, dataloader, val_loader=None):
         for step, batch in enumerate(tqdm(dataloader, leave=False, dynamic_ncols=True)):
