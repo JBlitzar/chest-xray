@@ -62,9 +62,10 @@ class ChestXrayCNNRes(nn.Module):
             DBlock(1024, 2048),
             nn.MaxPool2d(kernel_size=2, stride=2),  # 4x4x2048
             nn.Flatten(),
-            nn.Linear(4 * 4 * 2048, 2),
-            nn.Softmax(dim=1),
+            nn.Linear(4 * 4 * 2048, 1),
+            nn.Sigmoid(),
         )
 
     def forward(self, x):
+        x = x.unsqueeze(1)
         return self.block(x)

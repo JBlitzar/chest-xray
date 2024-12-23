@@ -11,3 +11,4 @@ pitfalls:
   - Got a simple thing up and running from my template, put in dataset and stuff.
   - Inefficient data handling because of spooky pytorch type errors. Saving to a cache instead.
   - Simple CNN with ReLU for now.
+  - Used BCELoss, other small tweaks

@@ -29,8 +29,9 @@ trainer = TrainingManager(
     dir=EXPERIMENT_DIRECTORY,
     dataloader=dataloader,
     device=device,
-    trainstep_checkin_interval=100,
+    trainstep_checkin_interval=10,
     epochs=100,
+    val_dataloader=testloader,
 )
 
 

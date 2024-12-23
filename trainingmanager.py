@@ -69,7 +69,7 @@ class TrainingManager:
 
         self.dir = dir
 
-        self.criterion = torch.nn.CrossEntropyLoss()
+        self.criterion = torch.nn.BCELoss()
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=learning_rate)
 
         self.tracker = ValueTracker()
@@ -175,12 +175,16 @@ class TrainingManager:
             {
                 "Loss/Epoch": self.tracker.average("Loss/epoch"),
                 "Loss/Val/Epoch": val_loss,
+                "Accuracy/Trainstep": self.tracker.average("Accuracy/trainstep"),
+                "Accuracy/Valstep": self.tracker.average("Accuracy/valstep"),
             },
             epoch,
         )
 
         self.tracker.reset("Loss/epoch")
         self.tracker.reset("Loss/val/epoch")
+        self.tracker.reset("Accuracy/trainstep")
+        self.tracker.reset("Accuracy/valstep")
 
         self.write_resume(epoch)
 
@@ -197,10 +201,14 @@ class TrainingManager:
 
         loss.backward()
 
+        acc = (result.round() == labels).sum().item() / len(labels)
+
         self.optimizer.step()
 
         self.tracker.add("Loss/trainstep", loss.item())
         self.tracker.add("Loss/epoch", loss.item())
+
+        self.tracker.add("Accuracy/trainstep", acc)
 
     @torch.no_grad()  # decorator yay
     def valstep(self, data, labels):
@@ -214,8 +222,11 @@ class TrainingManager:
 
         loss = self.criterion(result, labels)
 
+        acc = (result.round() == labels).sum().item() / len(labels)
+
         # self.tracker.add("Loss/valstep", loss.item())
         self.tracker.add("Loss/val/epoch", loss.item())
+        self.tracker.add("Accuracy/valstep", acc)
 
     def epoch(self, epoch: int, dataloader, val_loader=None):
         for step, batch in enumerate(tqdm(dataloader, leave=False, dynamic_ncols=True)):
