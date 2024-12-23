@@ -18,3 +18,4 @@ pitfalls:
   - Stopped early because plateau. Saved best val acc, 0.8.
   - `runs/v2-res` residual.
     - Weirdly, residual made it worse.
+  - I would consider this a relative success, of course it can be finetuned, but overall cool to get a model up and running in a short amount of time.
