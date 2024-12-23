@@ -10,22 +10,23 @@ device = "mps" if torch.backends.mps.is_available() else "cpu"
 
 from collections import defaultdict
 
+
 class ValueTracker:
     def __init__(self):
         self.data = {}
-    
+
     def add(self, label, value):
         if label not in self.data:
             self.data[label] = []
         self.data[label].append(value)
-    
+
     def average(self, label):
         values = self.data[label]
         if values:
             return sum(values) / len(values)
         else:
             return 0.0
-    
+
     def reset(self, label=None):
         if label is not None:
             if label in self.data:
@@ -33,18 +34,13 @@ class ValueTracker:
         else:
             self.data = {}
 
-    
     def get_values(self, label):
         return self.data[label]
-    
 
     def summary(self):
         for label in self.data:
             avg = self.average(label)
             print(f"{label} - Average: {avg:.4f}")
-
-
-
 
 
 class TrainingManager:
@@ -58,7 +54,6 @@ class TrainingManager:
         epochs=100,
         val_dataloader=None,
     ):
-
 
         learning_rate = 0.001
 
@@ -172,7 +167,9 @@ class TrainingManager:
         except KeyError:
             pass
 
-        self.save(val_loss if val_loss < float("inf") else self.tracker.average("Loss/epoch"))
+        self.save(
+            val_loss if val_loss < float("inf") else self.tracker.average("Loss/epoch")
+        )
 
         log_data(
             {
@@ -197,7 +194,6 @@ class TrainingManager:
         result = self.net(data)
 
         loss = self.criterion(result, labels)
-
 
         loss.backward()
 

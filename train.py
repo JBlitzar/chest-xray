@@ -1,4 +1,5 @@
 import os
+
 os.system(f"caffeinate -is -w {os.getpid()} &")
 
 from architecture import ChestXrayCNNRes
@@ -10,13 +11,7 @@ import torchvision
 from trainingmanager import TrainingManager
 
 
-
-
-
 EXPERIMENT_DIRECTORY = "runs/test1"
-
-
-
 
 
 device = "mps" if torch.backends.mps.is_available() else "cpu"
@@ -35,14 +30,14 @@ trainer = TrainingManager(
     dataloader=dataloader,
     device=device,
     trainstep_checkin_interval=100,
-    epochs=100
+    epochs=100,
 )
 
 
-
-
 for imgs, label in dataloader:
-    init_logger(net, imgs.to(device), dir=os.path.join(EXPERIMENT_DIRECTORY, "tensorboard"))
+    init_logger(
+        net, imgs.to(device), dir=os.path.join(EXPERIMENT_DIRECTORY, "tensorboard")
+    )
     break
 
 trainer.train()
