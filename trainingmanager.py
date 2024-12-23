@@ -59,7 +59,6 @@ class TrainingManager:
         val_dataloader=None,
     ):
 
-        #TODO: configure hyperparams
 
         learning_rate = 0.001
 

@@ -13,7 +13,6 @@ from trainingmanager import TrainingManager
 
 
 
-#TODO: setup experiment dir
 EXPERIMENT_DIRECTORY = "runs/test1"
 
 
@@ -30,7 +29,6 @@ testloader = get_dataloader(get_test_dataset())
 net = ChestXrayCNNRes()
 net.to(device)
 
-#TODO: configure
 trainer = TrainingManager(
     net=net,
     dir=EXPERIMENT_DIRECTORY,
