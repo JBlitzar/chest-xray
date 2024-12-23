@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+# For debugging.
 class ShapePrinter(nn.Module):
     def __init__(self):
         super().__init__()
@@ -29,7 +29,7 @@ class Reshape(nn.Module):
     def forward(self, x):
         return x.view(self.shape)
 
-
+# Classic DBlock. Residual connection included.
 class DBlock(nn.Module):
     def __init__(self, start, end, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -40,8 +40,11 @@ class DBlock(nn.Module):
             nn.ReLU(),
         )
 
-    def forward(self, x):
-        return self.block(x)
+    def forward(self, x, residual=True):
+        if residual:
+            return x + self.block(x)
+        else:
+            return self.block(x)
 
 
 class ChestXrayCNNRes(nn.Module):

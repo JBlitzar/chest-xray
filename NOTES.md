@@ -12,3 +12,6 @@ pitfalls:
   - Inefficient data handling because of spooky pytorch type errors. Saving to a cache instead.
   - Simple CNN with ReLU for now.
   - Used BCELoss, other small tweaks
+  - Letting it run, looks good! Acc is high.
+  - Acc 0.82, put residuals in the code for later.
+  - This is `runs/test1`.
