@@ -15,3 +15,4 @@ pitfalls:
   - Letting it run, looks good! Acc is high.
   - Acc 0.82, put residuals in the code for later.
   - This is `runs/test1`.
+  - Stopped early because plateau. Saved best val acc, 0.8.
