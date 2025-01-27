@@ -27,9 +27,58 @@ Next, I began by creating the training pipeline, located in [trainingmanager.py]
 
 Then, I created the architecture. The code for this can be found in [architecture.py](https://github.com/JBlitzar/chest-xray/blob/main/architecture.py). I started with a simple CNN, comparable to the [LeNet architecture](https://en.wikipedia.org/wiki/LeNet).
 
+I then iterated and tested with many different configurations: Both hyperparameters like batch size and optimizer variables and actual architectural changes. I experimented with residual blocks but found that they decreased both efficiency and accuracy. I experimented with regularization techniques to prevent overfitting. Finally, this was the best architecture I got:
+
+```python
+
+class DBlock(nn.Module):
+    def __init__(self, start, end, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.block = nn.Sequential(
+            nn.Conv2d(start, end, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(end, end, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+        )
+
+
+    def forward(self, x):
+        return self.block(x)
+
+
+class ChestXrayCNN(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        self.block = nn.Sequential(
+            DBlock(1, 64),  # 256x256x64
+            nn.MaxPool2d(kernel_size=2, stride=2),  # 128x128x64
+            DBlock(64, 128),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # 64x64x128
+            DBlock(128, 256),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # 32x32x256
+            DBlock(256, 512),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # 16x16x512
+            DBlock(512, 1024),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # 8x8x1024
+            DBlock(1024, 2048),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # 4x4x2048
+            nn.Flatten(),
+            nn.Linear(4 * 4 * 2048, 1),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, x):
+        x = x.unsqueeze(1)
+        return self.block(x)
+```
+
+Here's a plot of training accuracy over time:
+
 <img src="loss_curve.png" width="30%">
 
-Graph of loss over time
+In the end, I was able to get 95% training accuracy and 82% validation accuracy.
 
-- To view tensorboard loss curves etc, run `tensorboard --logdir runs` and navigate to http://localhost:6006s
-- For more insight into my process, check out [NOTES.md](NOTES.md)
+For more insight into my process, check out [NOTES.md](NOTES.md)
+
+(Advanced) To view tensorboard loss curves etc, run `tensorboard --logdir runs` and navigate to http://localhost:6006
