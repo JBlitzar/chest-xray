@@ -81,4 +81,4 @@ In the end, I was able to get 95% training accuracy and 82% validation accuracy.
 
 For more insight into my process, check out [NOTES.md](NOTES.md)
 
-(Advanced) To view tensorboard loss curves etc, run `tensorboard --logdir runs` and navigate to http://localhost:6006
+(Advanced) To view tensorboard loss curves and more, run `tensorboard --logdir runs` and navigate to http://localhost:6006
