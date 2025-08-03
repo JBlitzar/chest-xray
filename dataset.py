@@ -1,4 +1,3 @@
-import torchvision.datasets as dset
 from torch.utils.data import Dataset
 from torchvision.transforms import v2
 import torch
